@@ -1,0 +1,34 @@
+services:
+  - type: web
+    name: losgatosnegros
+    env: python
+    plan: free
+    buildCommand: bash build.sh
+    startCommand: gunicorn core.wsgi:application
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        value: "*.render.com"
+      - key: losgatosdb_POSTGRES_DATABASE
+        value: postgres
+      - key: losgatosdb_POSTGRES_USER
+        value: postgres
+      - key: losgatosdb_POSTGRES_PASSWORD
+        fromDatabase:
+          name: postgres
+          property: password
+      - key: losgatosdb_POSTGRES_HOST
+        fromDatabase:
+          name: postgres
+          property: host
+      - key: losgatosdb_POSTGRES_PORT
+        fromDatabase:
+          name: postgres
+          property: port
+
+databases:
+  - name: postgres
+    ipAllowList: []
