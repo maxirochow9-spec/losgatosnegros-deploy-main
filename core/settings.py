@@ -27,7 +27,7 @@ SECRET_KEY = config('SECRET_KEY', default='django-insecure-%e6dtf^r3hzfl4otgh9d+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1').split(',')
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1,*.render.com').split(',')
 
 
 # Application definition
@@ -86,6 +86,9 @@ DATABASES = {
         'PORT': config('losgatosdb_POSTGRES_PORT', default='5432'),
     }
 }
+
+# If a DATABASE_URL env var is present (Railway/Heroku style), prefer it.
+# No DATABASE_URL handling (Railway) — using explicit DB env vars for Render / Supabase
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
