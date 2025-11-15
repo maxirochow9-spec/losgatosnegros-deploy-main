@@ -32,5 +32,24 @@ env | grep -i "DJANGO\|SECRET_KEY\|POSTGRES\|SUPABASE\|RENDER" || true
 echo "-- Listing project root --"
 ls -la || true
 
+echo "-- Ensure static files collected (running collectstatic) --"
+python manage.py collectstatic --noinput || echo "collectstatic failed or returned non-zero"
+
+echo "-- staticfiles directory listing --"
+if [ -d staticfiles ]; then
+  ls -la staticfiles || true
+  echo "-- recursive staticfiles listing --"
+  find staticfiles -maxdepth 3 -type f -print | sed -n '1,200p' || true
+else
+  echo "(no staticfiles directory found)"
+fi
+
+echo "-- templates directories listing --"
+if [ -d tienda/templates ]; then
+  find tienda/templates -maxdepth 3 -type f -print | sed -n '1,200p' || true
+else
+  echo "(no tienda/templates directory found)"
+fi
+
 echo "---- starting Gunicorn ----"
 exec gunicorn core.wsgi:application --bind 0.0.0.0:8000 --workers 2
