@@ -20,7 +20,11 @@ which gunicorn || true
 gunicorn --version || true
 
 echo "-- DJANGO settings module --"
-echo "DJANGO_SETTINGS_MODULE=$DJANGO_SETTINGS_MODULE"
+# Avoid unbound variable when running with `set -u`.
+# Use the existing env var if set, otherwise default to `core.settings`.
+DJANGO_SETTINGS_MODULE_VALUE="${DJANGO_SETTINGS_MODULE:-core.settings}"
+echo "DJANGO_SETTINGS_MODULE=${DJANGO_SETTINGS_MODULE_VALUE}"
+export DJANGO_SETTINGS_MODULE="${DJANGO_SETTINGS_MODULE_VALUE}"
 
 echo "-- Relevant env vars (filtered) --"
 env | grep -i "DJANGO\|SECRET_KEY\|POSTGRES\|SUPABASE\|RENDER" || true
