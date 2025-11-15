@@ -67,6 +67,11 @@
             </div>
 
             <!-- Productos dinámicos -->
+            {% if db_error %}
+            <div class="alert alert-warning w-100" role="alert">
+                No se pudo conectar a la base de datos. Mostrando catálogo vacío temporalmente.
+            </div>
+            {% endif %}
             <div class="row" id="productsContainer">
                 {% for producto in productos %}
                 <div class="col-md-6 col-lg-4 col-xl-3 mb-4">
