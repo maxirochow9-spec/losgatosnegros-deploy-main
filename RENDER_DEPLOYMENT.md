@@ -32,19 +32,22 @@ git push origin main
 - **Name**: losgatosnegros
 - **Environment**: Python 3
 - **Build Command**: `bash build.sh`
-- **Start Command**: `gunicorn core.wsgi:application`
+- **Start Command**: Deja el campo vacío para que Render use el `Procfile`. El `Procfile` ya contiene:
+	```
+	web: gunicorn core.wsgi:application
+	```
 - **Plan**: Free (o el que prefieras)
 
 ### 4. Configurar variables de entorno
 
-En Render, ve a "Environment" y añade las siguientes variables:
+En Render, ve a "Environment" y añade las siguientes variables (o usa las que ya tengas configuradas):
 
 ```
 SECRET_KEY=<generate-a-new-secret-key>
 DEBUG=False
 ALLOWED_HOSTS=your-app-name.render.com
 losgatosdb_POSTGRES_DATABASE=postgres
-losgatosdb_POSTGRES_USER=postgres
+losgatosdb_POSTGRES_USER=postgres.duldrmfptypuvkuxpxyh
 losgatosdb_POSTGRES_PASSWORD=y6AVuJ1dnZYfFBqP
 losgatosdb_POSTGRES_HOST=db.duldrmfptypuvkuxpxyh.supabase.co
 losgatosdb_POSTGRES_PORT=5432
