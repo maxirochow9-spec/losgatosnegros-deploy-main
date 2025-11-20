@@ -1,5 +1,5 @@
 // Sample products data with realistic images
-let products = [
+const products = [
     {
         id: 1,
         name: "Whisky Escocés 12 Años",
@@ -81,88 +81,9 @@ let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
 // Initialize the page
 function init() {
-    // Si el servidor ya renderizó productos en el DOM, construir el array desde el DOM
-    if (productsContainer && productsContainer.children.length > 0) {
-        const domProducts = buildProductsFromDOM();
-        if (domProducts.length > 0) {
-            products = domProducts;
-            // No re-render para mantener el HTML que Django ya colocó,
-            // pero enlazamos los botones existentes a las funciones.
-            bindAddButtons();
-        } else {
-            renderProducts();
-        }
-    } else {
-        renderProducts();
-    }
+    renderProducts();
     updateCartCount();
     setupEventListeners();
-    applyQueryFilters();
-}
-
-// Construye un arreglo de productos a partir del HTML renderizado por el servidor
-function buildProductsFromDOM() {
-    const items = [];
-    const nodes = document.querySelectorAll('#productsContainer .product-card');
-    nodes.forEach(node => {
-        try {
-            const idBtn = node.querySelector('.btn-add');
-            const id = idBtn ? parseInt(idBtn.getAttribute('data-id')) : null;
-            const nameEl = node.querySelector('.product-title');
-            const priceEl = node.querySelector('.product-price');
-            const imgEl = node.querySelector('img');
-            const badge = node.querySelector('.badge');
-
-            let price = 0;
-            if (priceEl) {
-                // Extraer números del texto como $12.990
-                const num = priceEl.textContent.replace(/[^0-9]/g, '');
-                price = num ? parseInt(num, 10) : 0;
-            }
-
-            let type = '';
-            if (badge) {
-                const txt = badge.textContent.toLowerCase();
-                if (txt.includes('alcoh')) type = 'alcoholic';
-                else if (txt.includes('sin') || txt.includes('no')) type = 'non-alcoholic';
-            }
-
-            items.push({
-                id: id || Math.floor(Math.random() * 1000000),
-                name: nameEl ? nameEl.textContent.trim() : 'Producto',
-                price: price,
-                image: imgEl ? imgEl.getAttribute('src') : '',
-                type: type
-            });
-        } catch (e) {
-            // Ignorar elementos mal formados
-        }
-    });
-    return items;
-}
-
-// Enlaza los botones "Agregar" que ya existen en el DOM
-function bindAddButtons() {
-    document.querySelectorAll('.btn-add').forEach(button => {
-        button.removeEventListener('click', addButtonHandler);
-        button.addEventListener('click', addButtonHandler);
-    });
-}
-
-function addButtonHandler(e) {
-    const productId = parseInt(e.currentTarget.getAttribute('data-id'));
-    addToCart(productId);
-}
-
-// Apply filters from URL query string
-function applyQueryFilters() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const typeParam = urlParams.get('type');
-    
-    if (typeParam) {
-        typeFilter.value = typeParam;
-        filterProducts();
-    }
 }
 
 // Render products
@@ -176,10 +97,10 @@ function renderProducts(filteredProducts = products) {
     
     filteredProducts.forEach(product => {
         const productCard = document.createElement('div');
-        productCard.className = 'col-md-6 col-lg-4 col-xl-3 mb-4 product-item';
+        productCard.className = 'col-md-6 col-lg-4 col-xl-3 mb-4';
         productCard.innerHTML = `
             <div class="product-card">
-                <img src="${product.image}" class="product-img" alt="${product.name}" loading="lazy">
+                <img src="${product.image}" class="product-img" alt="${product.name}">
                 <div class="product-body">
                     <h5 class="product-title">${product.name}</h5>
                     <p class="product-price">$${product.price.toLocaleString('es-CL')}</p>
@@ -470,7 +391,7 @@ function setupEventListeners() {
         
         if (name && email && password && phone) {
             localStorage.setItem('user', JSON.stringify({ name, email, phone }));
-            toastMessage.textContent = 'Registro exitoso. ¡Bienvenido!';
+            toastMessage.textContent = 'Registro exitoso. Bienvenido!';
             customToast.show();
             loginModal.hide();
         }

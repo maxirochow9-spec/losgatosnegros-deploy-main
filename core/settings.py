@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 import os
 from pathlib import Path
 from decouple import config
+from urllib.parse import urlparse, parse_qs
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -82,19 +83,43 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('losgatosdb_POSTGRES_DATABASE', default='postgres'),
-        'USER': config('losgatosdb_POSTGRES_USER', default='postgres'),
-        'PASSWORD': config('losgatosdb_POSTGRES_PASSWORD', default='postgres'),
-        'HOST': config('losgatosdb_POSTGRES_HOST', default='localhost'),
-        'PORT': config('losgatosdb_POSTGRES_PORT', default='5432'),
-    }
-}
+DATABASES = {}
 
-# If a DATABASE_URL env var is present (Railway/Heroku style), prefer it.
-# No DATABASE_URL handling (Railway) — using explicit DB env vars for Render / Supabase
+# Prefer a DATABASE_URL environment variable (e.g. Supabase, Heroku style).
+database_url = os.environ.get('DATABASE_URL') or os.environ.get('DATABASE_URL_INTERNAL')
+if database_url:
+    # Parse postgres URL: postgres://user:pass@host:port/dbname?sslmode=require
+    parsed = urlparse(database_url)
+    db_name = parsed.path.lstrip('/')
+    db_user = parsed.username or ''
+    db_password = parsed.password or ''
+    db_host = parsed.hostname or ''
+    db_port = parsed.port or ''
+
+    DATABASES['default'] = {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': db_name,
+        'USER': db_user,
+        'PASSWORD': db_password,
+        'HOST': db_host,
+        'PORT': db_port,
+    }
+
+    # If sslmode is present in query, set OPTIONS
+    query = parse_qs(parsed.query)
+    sslmode = query.get('sslmode', [None])[0]
+    if sslmode:
+        DATABASES['default']['OPTIONS'] = {'sslmode': sslmode}
+else:
+    # Fallback to explicit env vars. Support both losgatosdb_* names and generic DB_* names.
+    DATABASES['default'] = {
+        'ENGINE': config('DB_ENGINE', default='django.db.backends.postgresql'),
+        'NAME': config('losgatosdb_POSTGRES_DATABASE', default=config('DB_NAME', default='postgres')),
+        'USER': config('losgatosdb_POSTGRES_USER', default=config('DB_USER', default='postgres')),
+        'PASSWORD': config('losgatosdb_POSTGRES_PASSWORD', default=config('DB_PASSWORD', default='postgres')),
+        'HOST': config('losgatosdb_POSTGRES_HOST', default=config('DB_HOST', default='localhost')),
+        'PORT': config('losgatosdb_POSTGRES_PORT', default=config('DB_PORT', default='5432')),
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
@@ -118,13 +143,19 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+# Read locale settings from environment so migrations and runtime use correct zone
+LANGUAGE_CODE = config('LANGUAGE_CODE', default='es-CL')
 
-TIME_ZONE = 'UTC'
+# TIME_ZONE should match your project's locale (Render / Supabase examples use America/Santiago)
+TIME_ZONE = config('TIME_ZONE', default='America/Santiago')
 
 USE_I18N = True
 
+# Use timezone-aware datetimes by default
 USE_TZ = True
+
+# Optional: persistent DB connections (seconds). 0 = disable persistent connections
+CONN_MAX_AGE = config('CONN_MAX_AGE', default=0, cast=int)
 
 
 # Static files (CSS, JavaScript, Images)

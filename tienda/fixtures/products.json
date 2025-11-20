@@ -1,0 +1,52 @@
+[
+  {
+    "model": "tienda.producto",
+    "pk": 1,
+    "fields": {
+      "nombre": "Cerveza Negra",
+      "precio": "1490.00",
+      "imagen": "https://via.placeholder.com/400x300.png?text=Cerveza+Negra",
+      "tipo": "alcoholic"
+    }
+  },
+  {
+    "model": "tienda.producto",
+    "pk": 2,
+    "fields": {
+      "nombre": "Cider Natural",
+      "precio": "1290.00",
+      "imagen": "https://via.placeholder.com/400x300.png?text=Cider+Natural",
+      "tipo": "alcoholic"
+    }
+  },
+  {
+    "model": "tienda.producto",
+    "pk": 3,
+    "fields": {
+      "nombre": "Jugo Tropical",
+      "precio": "990.00",
+      "imagen": "https://via.placeholder.com/400x300.png?text=Jugo+Tropical",
+      "tipo": "non-alcoholic"
+    }
+  },
+  {
+    "model": "tienda.producto",
+    "pk": 4,
+    "fields": {
+      "nombre": "Gaseosa Cola",
+      "precio": "690.00",
+      "imagen": "https://via.placeholder.com/400x300.png?text=Gaseosa+Cola",
+      "tipo": "non-alcoholic"
+    }
+  },
+  {
+    "model": "tienda.producto",
+    "pk": 5,
+    "fields": {
+      "nombre": "Vino Tinto",
+      "precio": "4990.00",
+      "imagen": "https://via.placeholder.com/400x300.png?text=Vino+Tinto",
+      "tipo": "alcoholic"
+    }
+  }
+]
