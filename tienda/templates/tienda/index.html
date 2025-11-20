@@ -6,18 +6,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Los Gatos Negros - Delivery de Bebidas en Valdivia</title>
 
-    <!-- Estilos -->
-    <link rel="stylesheet" href="{% static 'tienda/styles.css' %}">
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Estilos (sobrescriben Bootstrap cuando es necesario) -->
+    <link rel="stylesheet" href="{% static 'tienda/styles.css' %}">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
 </head>
 <body>
+    <a class="visually-hidden-focusable skip-link" href="#main">Saltar al contenido</a>
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top" role="navigation" aria-label="Menú principal">
         <div class="container">
-            <a class="navbar-brand" href="#">
+            <a class="navbar-brand" href="{% url 'home' %}">
                 <i class="bi bi-moon-stars-fill"></i> Los Gatos Negros
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -33,13 +34,24 @@
                             <span class="badge bg-warning text-dark" id="cartCount">0</span>
                         </a>
                     </li>
-                    <li class="nav-item"><a class="nav-link" href="#" id="accountLink">Mi Cuenta</a></li>
+                    {% if request.user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">{{ request.user.username }}</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'logout' %}">Cerrar sesión</a>
+                    </li>
+                    {% else %}
+                    <li class="nav-item"><a class="nav-link" href="{% url 'login' %}?next={{ request.path }}">Iniciar sesión</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'register' %}?next={{ request.path }}">Registrarse</a></li>
+                    {% endif %}
                 </ul>
             </div>
         </div>
     </nav>
 
     <!-- Hero Section -->
+    <main id="main">
     <section class="hero">
         <div class="hero-content">
             <h1>Delivery de Bebidas en Valdivia</h1>
@@ -47,6 +59,7 @@
             <a href="#catalog" class="btn btn-accent">Ver catálogo</a>
         </div>
     </section>
+    </main>
 
     <!-- Catálogo -->
     <section id="catalog" class="py-5">
@@ -148,55 +161,7 @@
         </div>
     </div>
 
-    <!-- Modal Login/Registro -->
-    <div class="modal fade" id="loginModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content bg-dark text-light">
-                <div class="modal-header">
-                    <h5 class="modal-title">Iniciar Sesión</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div id="loginForm">
-                        <div class="form-group mb-3">
-                            <label for="loginEmail">Correo electrónico</label>
-                            <input type="email" class="form-control" id="loginEmail" required>
-                        </div>
-                        <div class="form-group mb-3">
-                            <label for="loginPassword">Contraseña</label>
-                            <input type="password" class="form-control" id="loginPassword" required>
-                        </div>
-                        <button class="btn btn-accent w-100 mt-3" id="loginBtn">Iniciar Sesión</button>
-                        <div class="text-center mt-3">
-                            <button class="toggle-form" id="showRegister">¿No tienes cuenta? Regístrate</button>
-                        </div>
-                    </div>
-                    <div id="registerForm" style="display:none;">
-                        <div class="form-group mb-3">
-                            <label for="registerName">Nombre completo</label>
-                            <input type="text" class="form-control" id="registerName" required>
-                        </div>
-                        <div class="form-group mb-3">
-                            <label for="registerEmail">Correo electrónico</label>
-                            <input type="email" class="form-control" id="registerEmail" required>
-                        </div>
-                        <div class="form-group mb-3">
-                            <label for="registerPassword">Contraseña</label>
-                            <input type="password" class="form-control" id="registerPassword" required>
-                        </div>
-                        <div class="form-group mb-3">
-                            <label for="registerPhone">Teléfono</label>
-                            <input type="tel" class="form-control" id="registerPhone" required>
-                        </div>
-                        <button class="btn btn-accent w-100 mt-3" id="registerBtn">Registrarse</button>
-                        <div class="text-center mt-3">
-                            <button class="toggle-form" id="showLogin">¿Ya tienes cuenta? Inicia sesión</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <!-- Modal Login/Registro eliminado: usar vistas server-side /login/ y /register/ -->
 
     <!-- Toast -->
     <div class="toast-container position-fixed bottom-0 end-0 p-3">
@@ -245,6 +210,5 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{% static 'tienda/main.js' %}"></script>
-    <link rel="stylesheet" href="{% static 'tienda/styles.css' %}">
 </body>
 </html>

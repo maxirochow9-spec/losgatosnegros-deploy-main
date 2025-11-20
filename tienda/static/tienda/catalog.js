@@ -1,62 +1,3 @@
-// Sample products data with realistic images
-let products = [
-    {
-        id: 1,
-        name: "Whisky Escocés 12 Años",
-        price: 15990,
-        image: "https://desaonline.vtexassets.com/arquivos/ids/157202-800-auto?v=637437364118770000&width=800&height=auto&aspect=true",
-        type: "alcoholic"
-    },
-    {
-        id: 2,
-        name: "Vino Tinto Reserva",
-        price: 8990,
-        image: "https://media.falabella.com/tottusCL/02000039_1/w=800,h=800,fit=pad",
-        type: "alcoholic"
-    },
-    {
-        id: 3,
-        name: "Cerveza Artesanal IPA",
-        price: 2490,
-        image: "https://unimarc.vtexassets.com/arquivos/ids/232413/000000000000663374-UN-01.jpg?v=638167546055270000",
-        type: "alcoholic"
-    },
-    {
-        id: 4,
-        name: "Jugo de Naranja Natural",
-        price: 1990,
-        image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQd67gBvzoCeNMdd6VAaXJXZAt3anupxeUfBA&s",
-        type: "non-alcoholic"
-    },
-    {
-        id: 5,
-        name: "Agua Mineral con Gas",
-        price: 1290,
-        image: "https://tost.cl/cdn/shop/files/Disenosintitulo-2024-04-02T164739.838_1200x.png?v=1738742454",
-        type: "non-alcoholic"
-    },
-    {
-        id: 6,
-        name: "Gaseosa CoCa Cola",
-        price: 1490,
-        image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSXO9xZmjHdxttGK0ga-kIal4qwE67dEYAE3Q&s",
-        type: "non-alcoholic"
-    },
-    {
-        id: 7,
-        name: "Ron Dorado Añejo",
-        price: 12990,
-        image: "https://cdnx.jumpseller.com/comercial-jp/image/51061622/ron_dorado_mitjans_750cc_y_1000cc.jfif?1722550406",
-        type: "alcoholic"
-    },
-    {
-        id: 8,
-        name: "Té Helado de Durazno",
-        price: 2190,
-        image: "https://santaisabel.vtexassets.com/arquivos/ids/426763/Ice-Tea-Lipton-Durazno-15-L.jpg?v=638602811286100000",
-        type: "non-alcoholic"
-    }
-];
 
 // DOM Elements
 const productsContainer = document.getElementById('productsContainer');
@@ -65,7 +6,8 @@ const typeFilter = document.getElementById('typeFilter');
 const cartLink = document.getElementById('cartLink');
 const cartModal = new bootstrap.Modal(document.getElementById('cartModal'));
 const checkoutModal = new bootstrap.Modal(document.getElementById('checkoutModal'));
-const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
+const loginModalEl = document.getElementById('loginModal');
+const loginModal = loginModalEl ? new bootstrap.Modal(loginModalEl) : null;
 const accountLink = document.getElementById('accountLink');
 const cartCount = document.getElementById('cartCount');
 const cartItems = document.getElementById('cartItems');
@@ -383,6 +325,15 @@ function setupEventListeners() {
             customToast.show();
             return;
         }
+
+        // Requerir que el usuario esté autenticado (variable `IS_AUTH` definida en template)
+        if (typeof IS_AUTH !== 'undefined' && !IS_AUTH) {
+            // Redirigir a la página de login con next para volver a catálogo
+            const next = encodeURIComponent(window.location.pathname + window.location.search);
+            window.location.href = '/login/?next=' + next;
+            return;
+        }
+
         cartModal.hide();
         checkoutModal.show();
     });
@@ -407,74 +358,97 @@ function setupEventListeners() {
             return;
         }
         
-        // Generate WhatsApp message
-        let message = `¡Hola! Quisiera hacer un pedido:\n\n`;
-        cart.forEach(item => {
-            message += `- ${item.name} x${item.quantity} = $${(item.price * item.quantity).toLocaleString('es-CL')}\n`;
+        // Enviar pedido al servidor para persistir
+        const payload = {
+            items: cart.map(i => ({ id: i.id, quantity: i.quantity })),
+            direccion: address,
+            telefono: phone
+        };
+
+        // Obtener csrf token desde cookie
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+
+        const csrftoken = getCookie('csrftoken');
+
+        fetch('/orders/create/', {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken || ''
+            },
+            body: JSON.stringify(payload)
+        }).then(r => r.json()).then(data => {
+            if (data && data.success) {
+                // Opcional: enviar a WhatsApp también
+                let message = `¡Hola! Quisiera hacer un pedido:\n\n`;
+                cart.forEach(item => {
+                    message += `- ${item.name} x${item.quantity} = $${(item.price * item.quantity).toLocaleString('es-CL')}\n`;
+                });
+                message += `\nTotal: $${cart.reduce((total, item) => total + (item.price * item.quantity), 0).toLocaleString('es-CL')}\n\n`;
+                message += `Nombre: ${name}\n`;
+                message += `Dirección: ${address}\n`;
+                message += `Teléfono: ${phone}`;
+
+                const encodedMessage = encodeURIComponent(message);
+                const whatsappUrl = `https://wa.me/56912345678?text=${encodedMessage}`;
+
+                clearCart();
+                checkoutModal.hide();
+                toastMessage.textContent = 'Pedido guardado y enviado! Redirigiendo a WhatsApp...';
+                customToast.show();
+
+                setTimeout(() => {
+                    window.open(whatsappUrl, '_blank');
+                }, 1500);
+            } else {
+                const err = (data && data.error) ? data.error : 'Error al crear pedido';
+                toastMessage.textContent = err;
+                customToast.show();
+            }
+        }).catch(err => {
+            toastMessage.textContent = 'Error al conectar con el servidor';
+            customToast.show();
+            console.error(err);
         });
-        message += `\nTotal: $${cart.reduce((total, item) => total + (item.price * item.quantity), 0).toLocaleString('es-CL')}\n\n`;
-        message += `Nombre: ${name}\n`;
-        message += `Dirección: ${address}\n`;
-        message += `Teléfono: ${phone}`;
-        
-        const encodedMessage = encodeURIComponent(message);
-        const whatsappUrl = `https://wa.me/56912345678?text=${encodedMessage}`;
-        
-        clearCart();
-        checkoutModal.hide();
-        
-        toastMessage.textContent = 'Pedido enviado! Redirigiendo a WhatsApp...';
-        customToast.show();
-        
-        setTimeout(() => {
-            window.open(whatsappUrl, '_blank');
-        }, 1500);
     });
     
-    // Account link
-    accountLink.addEventListener('click', (e) => {
-        e.preventDefault();
-        loginModal.show();
-    });
+    // Account link: sólo añadir handler si el enlace es el antiguo '#'
+    if (accountLink) {
+        const href = accountLink.getAttribute('href');
+        if (href === '#' && loginModal) {
+            accountLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                loginModal.show();
+            });
+        }
+    }
     
     // Login/Registration toggles
-    document.getElementById('showRegister').addEventListener('click', () => {
-        document.getElementById('loginForm').style.display = 'none';
-        document.getElementById('registerForm').style.display = 'block';
-    });
-    
-    document.getElementById('showLogin').addEventListener('click', () => {
-        document.getElementById('registerForm').style.display = 'none';
-        document.getElementById('loginForm').style.display = 'block';
-    });
-    
-    // Login button
-    document.getElementById('loginBtn').addEventListener('click', () => {
-        const email = document.getElementById('loginEmail').value;
-        const password = document.getElementById('loginPassword').value;
-        
-        if (email && password) {
-            localStorage.setItem('user', JSON.stringify({ email }));
-            toastMessage.textContent = 'Inicio de sesión exitoso';
-            customToast.show();
-            loginModal.hide();
-        }
-    });
-    
-    // Register button
-    document.getElementById('registerBtn').addEventListener('click', () => {
-        const name = document.getElementById('registerName').value;
-        const email = document.getElementById('registerEmail').value;
-        const password = document.getElementById('registerPassword').value;
-        const phone = document.getElementById('registerPhone').value;
-        
-        if (name && email && password && phone) {
-            localStorage.setItem('user', JSON.stringify({ name, email, phone }));
-            toastMessage.textContent = 'Registro exitoso. ¡Bienvenido!';
-            customToast.show();
-            loginModal.hide();
-        }
-    });
+    // Login/Registration modal buttons should redirect to server-side pages
+    const showRegisterBtn = document.getElementById('showRegister');
+    const showLoginBtn = document.getElementById('showLogin');
+    const loginBtn = document.getElementById('loginBtn');
+    const registerBtn = document.getElementById('registerBtn');
+
+    function redirectToLogin() {
+        const next = encodeURIComponent(window.location.pathname + window.location.search);
+        window.location.href = '/login/?next=' + next;
+    }
+
+    function redirectToRegister() {
+        const next = encodeURIComponent(window.location.pathname + window.location.search);
+        window.location.href = '/register/?next=' + next;
+    }
+
+    if (showRegisterBtn) showRegisterBtn.addEventListener('click', (e) => { e.preventDefault(); redirectToRegister(); });
+    if (showLoginBtn) showLoginBtn.addEventListener('click', (e) => { e.preventDefault(); redirectToLogin(); });
+    if (loginBtn) loginBtn.addEventListener('click', (e) => { e.preventDefault(); redirectToLogin(); });
+    if (registerBtn) registerBtn.addEventListener('click', (e) => { e.preventDefault(); redirectToRegister(); });
     
     // Filter inputs
     searchInput.addEventListener('input', filterProducts);

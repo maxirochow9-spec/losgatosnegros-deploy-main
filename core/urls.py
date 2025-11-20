@@ -24,4 +24,8 @@ urlpatterns = [
     path('', views.home, name='home'),
     path('catalogo/', views.catalog, name='catalog'),
     path('index/', views.index, name='index'),  # Mantenida por compatibilidad
+    path('login/', views.login_view, name='login'),
+    path('register/', views.register_view, name='register'),
+    path('logout/', views.logout_view, name='logout'),
+    path('orders/create/', views.create_order, name='create_order'),
 ]
