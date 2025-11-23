@@ -22,8 +22,7 @@ import logging
 
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
-from .serializers import ProductSerializer
-from tienda.models import Producto
+from .serializers import ProductoSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -205,5 +204,5 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
     # Usamos `Producto` y no filtramos por `available` porque el modelo actual
     # tiene campos en español; si añades un campo de disponibilidad, ajusta aquí.
     queryset = Producto.objects.all().order_by('id')
-    serializer_class = ProductSerializer
+    serializer_class = ProductoSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
