@@ -19,6 +19,12 @@ from .models import Pedido, PedidoItem
 from django.utils import timezone
 import logging
 
+
+from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from .serializers import ProductSerializer
+from tienda.models import Producto
+
 logger = logging.getLogger(__name__)
 
 # Create your views here.
@@ -192,3 +198,12 @@ def json_load_request(request):
     import json
     body = request.body.decode('utf-8') if request.body else '{}'
     return json.loads(body)
+
+
+class ProductViewSet(viewsets.ReadOnlyModelViewSet):
+    """Endpoint read-only para listar y ver detalle de productos."""
+    # Usamos `Producto` y no filtramos por `available` porque el modelo actual
+    # tiene campos en español; si añades un campo de disponibilidad, ajusta aquí.
+    queryset = Producto.objects.all().order_by('id')
+    serializer_class = ProductSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
