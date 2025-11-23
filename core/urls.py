@@ -16,7 +16,7 @@ Including another URLconf
 """
 
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from tienda import views
 
 urlpatterns = [
@@ -28,4 +28,6 @@ urlpatterns = [
     path('register/', views.register_view, name='register'),
     path('logout/', views.logout_view, name='logout'),
     path('orders/create/', views.create_order, name='create_order'),
+    # API endpoints (Django REST Framework)
+    path('api/', include('api.urls')),
 ]
