@@ -5,7 +5,7 @@
     "fields": {
       "nombre": "Cerveza Negra",
       "precio": "1490.00",
-      "imagen": "https://via.placeholder.com/400x300.png?text=Cerveza+Negra",
+      "imagen": "/static/tienda/img/ballentine-promo.png",
       "tipo": "alcoholic"
     }
   },
@@ -15,7 +15,7 @@
     "fields": {
       "nombre": "Cider Natural",
       "precio": "1290.00",
-      "imagen": "https://via.placeholder.com/400x300.png?text=Cider+Natural",
+      "imagen": "/static/tienda/img/jack-promo.png",
       "tipo": "alcoholic"
     }
   },
@@ -25,7 +25,7 @@
     "fields": {
       "nombre": "Jugo Tropical",
       "precio": "990.00",
-      "imagen": "https://via.placeholder.com/400x300.png?text=Jugo+Tropical",
+      "imagen": "/static/tienda/img/sandy-promo.png",
       "tipo": "non-alcoholic"
     }
   },
@@ -35,7 +35,7 @@
     "fields": {
       "nombre": "Gaseosa Cola",
       "precio": "690.00",
-      "imagen": "https://via.placeholder.com/400x300.png?text=Gaseosa+Cola",
+      "imagen": "/static/tienda/img/jhonnie-promo.png",
       "tipo": "non-alcoholic"
     }
   },
