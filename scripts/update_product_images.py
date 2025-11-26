@@ -1,4 +1,4 @@
-# Este script será pasado a `python manage.py shell < scripts/update_product_images.py`
+jugo-naranja# Este script será pasado a `python manage.py shell < scripts/update_product_images.py`
 from tienda.models import Producto
 
 # Mapea nombres de producto a rutas estáticas locales

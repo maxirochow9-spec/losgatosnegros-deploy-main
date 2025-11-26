@@ -30,9 +30,6 @@ for p in Producto.objects.all():
     nombre = (p.nombre or '').strip()
     name_lower = nombre.lower()
     new_img = find_image_for_name(name_lower)
-    # Si no hay match específico, usar Sandy como fallback (según lo pedido)
-    if not new_img:
-        new_img = '/static/tienda/img/sandy-promo.png'
     if new_img:
         if p.imagen != new_img:
             p.imagen = new_img
