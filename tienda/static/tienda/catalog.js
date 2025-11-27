@@ -96,14 +96,17 @@ function addButtonHandler(e) {
     addToCart(productId);
 }
 
-// Apply filters from URL query string
+// Apply filters from URL query string (only initialize inputs, do NOT reload)
 function applyQueryFilters() {
     const urlParams = new URLSearchParams(window.location.search);
     const typeParam = urlParams.get('type');
-    
-    if (typeParam) {
+    const qParam = urlParams.get('q') || urlParams.get('search') || urlParams.get('query');
+
+    if (typeParam && typeFilter) {
         typeFilter.value = typeParam;
-        filterProducts();
+    }
+    if (qParam && searchInput) {
+        searchInput.value = qParam;
     }
 }
 
@@ -289,24 +292,76 @@ function clearCart() {
     updateCartCount();
 }
 
-// Filter products
+// Utility: normalize string (lowercase, remove diacritics)
+function normalize(s){
+    if(!s) return '';
+    return s.toString().toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '');
+}
+
+// Fuzzy token/subsequence match: return true if every token is found as substring or subsequence
+function fuzzyMatch(name, query){
+    if(!query) return true;
+    const n = normalize(name);
+    const tokens = normalize(query).split(/\s+/).filter(Boolean);
+    if(tokens.length === 0) return true;
+
+    return tokens.every(token => {
+        if(n.includes(token)) return true;
+        // subsequence check
+        let i = 0, j = 0;
+        while(i < token.length && j < n.length){
+            if(token[i] === n[j]) i++;
+            j++;
+        }
+        return i === token.length;
+    });
+}
+
+// Debounce helper
+function debounce(fn, wait){
+    let t = null;
+    return function(...args){
+        clearTimeout(t);
+        t = setTimeout(()=> fn.apply(this, args), wait);
+    };
+}
+
+// Filter products (client-side fuzzy + type), works with `products` array built from DOM or data
 function filterProducts() {
-    const searchTerm = searchInput.value.toLowerCase();
-    const type = typeFilter.value;
-    
-    let filtered = products;
-    
+    const searchTerm = searchInput ? searchInput.value.trim() : '';
+    const type = typeFilter ? typeFilter.value : '';
+
+    let filtered = products.slice();
+
     if (searchTerm) {
-        filtered = filtered.filter(product => 
-            product.name.toLowerCase().includes(searchTerm)
-        );
+        filtered = filtered.filter(p => fuzzyMatch(p.name, searchTerm));
     }
-    
+
     if (type) {
-        filtered = filtered.filter(product => product.type === type);
+        filtered = filtered.filter(p => (p.type || '') === type);
     }
-    
+
     renderProducts(filtered);
+    // Actualizar parámetros de la URL sin recargar
+    updateUrlParams();
+}
+
+// Actualiza la querystring (q, type) sin recargar la página
+function updateUrlParams() {
+    try {
+        const params = new URLSearchParams(window.location.search);
+        const q = searchInput ? searchInput.value.trim() : '';
+        const type = typeFilter ? typeFilter.value : '';
+
+        if (q) params.set('q', q); else params.delete('q');
+        if (type) params.set('type', type); else params.delete('type');
+
+        const qs = params.toString();
+        const newUrl = qs ? (window.location.pathname + '?' + qs) : window.location.pathname;
+        window.history.replaceState({}, '', newUrl);
+    } catch (e) {
+        // ignore (older browsers)
+    }
 }
 
 // Setup event listeners
@@ -450,9 +505,9 @@ function setupEventListeners() {
     if (loginBtn) loginBtn.addEventListener('click', (e) => { e.preventDefault(); redirectToLogin(); });
     if (registerBtn) registerBtn.addEventListener('click', (e) => { e.preventDefault(); redirectToRegister(); });
     
-    // Filter inputs
-    searchInput.addEventListener('input', filterProducts);
-    typeFilter.addEventListener('change', filterProducts);
+    // Filter inputs (debounced search)
+    if (searchInput) searchInput.addEventListener('input', debounce(filterProducts, 250));
+    if (typeFilter) typeFilter.addEventListener('change', filterProducts);
 }
 
 // Initialize the app
