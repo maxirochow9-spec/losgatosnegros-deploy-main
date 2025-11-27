@@ -11,6 +11,7 @@ from tienda.models import Producto
 
 # Mapeos explícitos por ID solicitados
 mappings = {
+    57: 'heineken.png',
     58: 'becker-12.png',
     59: 'cocacola.png',
     60: 'fanta.png',
