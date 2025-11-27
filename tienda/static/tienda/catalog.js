@@ -395,7 +395,7 @@ function setupEventListeners() {
                 message += `Teléfono: ${phone}`;
 
                 const encodedMessage = encodeURIComponent(message);
-                const whatsappUrl = `https://wa.me/56912345678?text=${encodedMessage}`;
+                const whatsappUrl = `https://wa.me/56966344411?text=${encodedMessage}`;
 
                 clearCart();
                 checkoutModal.hide();
