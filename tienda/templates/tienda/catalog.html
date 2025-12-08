@@ -100,14 +100,14 @@
                         <div class="product-body">
                             <h5 class="product-title">{{ producto.nombre }}</h5>
                             <span class="badge bg-info mb-2">
-                                {% if producto.tipo == 'alcoholic' %}
+                                {% if producto.es_alcoholico %}
                                     Alcohólica
                                 {% else %}
                                     Sin Alcohol
                                 {% endif %}
                             </span>
                             <p class="product-price">${{ producto.precio|floatformat:0 }}</p>
-                            <button class="btn btn-add" data-id="{{ producto.id }}">
+                            <button class="btn btn-add" data-id="{{ producto.id }}" data-type="{% if producto.es_alcoholico %}alcoholic{% else %}non-alcoholic{% endif %}">
                                 <i class="bi bi-cart-plus"></i> Agregar al carrito
                             </button>
                         </div>
@@ -118,6 +118,31 @@
                     <p class="text-center text-muted">No hay productos disponibles.</p>
                 </div>
                 {% endfor %}
+            </div>
+
+            <!-- Contenedor de paginación que el JS puede actualizar vía AJAX -->
+            <div id="paginationContainer">
+            {% if paginator and page_obj %}
+            <nav aria-label="Paginación catálogo" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.type %}&type={{ request.GET.type }}{% endif %}">Anterior</a></li>
+                    {% else %}
+                        <li class="page-item disabled"><span class="page-link">Anterior</span></li>
+                    {% endif %}
+
+                    {% for num in paginator.page_range %}
+                        <li class="page-item {% if page_obj.number == num %}active{% endif %}"><a class="page-link" href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.type %}&type={{ request.GET.type }}{% endif %}">{{ num }}</a></li>
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.type %}&type={{ request.GET.type }}{% endif %}">Siguiente</a></li>
+                    {% else %}
+                        <li class="page-item disabled"><span class="page-link">Siguiente</span></li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
             </div>
         </div>
     </section>

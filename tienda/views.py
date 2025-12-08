@@ -36,14 +36,36 @@ def home(request):
 def catalog(request):
     """Vista del catálogo de productos"""
     try:
-        productos = Producto.objects.all()
+        productos = Producto.objects.all().order_by('id')
 
         # Filtrar por tipo si se proporciona en la query string
         tipo = request.GET.get('type')
         if tipo:
             productos = productos.filter(tipo=tipo)
 
-        return render(request, 'tienda/catalog.html', {'productos': productos})
+        # Filtrar por búsqueda (q)
+        q = request.GET.get('q') or request.GET.get('search') or request.GET.get('query')
+        if q:
+            productos = productos.filter(nombre__icontains=q)
+
+        # Paginación: 12 productos por página
+        from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+        paginator = Paginator(productos, 12)
+        page = request.GET.get('page', 1)
+        try:
+            productos_page = paginator.page(page)
+        except PageNotAnInteger:
+            productos_page = paginator.page(1)
+        except EmptyPage:
+            productos_page = paginator.page(paginator.num_pages)
+
+        return render(request, 'tienda/catalog.html', {
+            'productos': productos_page,
+            'paginator': paginator,
+            'page_obj': productos_page,
+            'q': q,
+            'type_filter': tipo,
+        })
     except OperationalError as oe:
         # Error de conexión a la base de datos: loggear y mostrar catálogo vacío
         print('OperationalError en vista catalog:', oe, file=sys.stderr)

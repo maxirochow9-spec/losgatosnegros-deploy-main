@@ -20,6 +20,8 @@ const toastMessage = document.getElementById('toastMessage');
 
 // Cart array
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
+// Productos (array usado por render/filtrado)
+let products = [];
 
 // Initialize the page
 function init() {
@@ -505,9 +507,35 @@ function setupEventListeners() {
     if (loginBtn) loginBtn.addEventListener('click', (e) => { e.preventDefault(); redirectToLogin(); });
     if (registerBtn) registerBtn.addEventListener('click', (e) => { e.preventDefault(); redirectToRegister(); });
     
-    // Filter inputs (debounced search)
+    // Filter inputs
+    // Debounced client-side filtering for quick UX
     if (searchInput) searchInput.addEventListener('input', debounce(filterProducts, 250));
-    if (typeFilter) typeFilter.addEventListener('change', filterProducts);
+    // If user presses Enter in search, perform server-side search (reload with params)
+    if (searchInput) searchInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const params = new URLSearchParams(window.location.search);
+            const q = searchInput.value.trim();
+            if (q) params.set('q', q); else params.delete('q');
+            params.delete('page');
+            const type = typeFilter ? typeFilter.value : '';
+            if (type) params.set('type', type); else params.delete('type');
+            const qs = params.toString();
+            window.location.search = qs ? ('?' + qs) : '';
+        }
+    });
+
+    // When user changes type, perform server-side filter (reload)
+    if (typeFilter) typeFilter.addEventListener('change', (e) => {
+        const params = new URLSearchParams(window.location.search);
+        const q = searchInput ? searchInput.value.trim() : '';
+        if (q) params.set('q', q); else params.delete('q');
+        const type = typeFilter.value;
+        if (type) params.set('type', type); else params.delete('type');
+        params.delete('page');
+        const qs = params.toString();
+        window.location.search = qs ? ('?' + qs) : '';
+    });
 }
 
 // Initialize the app
