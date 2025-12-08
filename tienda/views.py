@@ -36,7 +36,7 @@ def home(request):
 def catalog(request):
     """Vista del catálogo de productos"""
     try:
-        productos = Producto.objects.all().order_by('id')
+        productos = Producto.objects.filter(visible=True).order_by('id')
 
         # Filtrar por tipo si se proporciona en la query string
         tipo = request.GET.get('type')
@@ -225,6 +225,6 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
     """Endpoint read-only para listar y ver detalle de productos."""
     # Usamos `Producto` y no filtramos por `available` porque el modelo actual
     # tiene campos en español; si añades un campo de disponibilidad, ajusta aquí.
-    queryset = Producto.objects.all().order_by('id')
+    queryset = Producto.objects.filter(visible=True).order_by('id')
     serializer_class = ProductoSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
