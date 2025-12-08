@@ -99,15 +99,19 @@
                         <img src="{{ producto.imagen }}" class="product-img" alt="{{ producto.nombre }}">
                         <div class="product-body">
                             <h5 class="product-title">{{ producto.nombre }}</h5>
-                            <span class="badge bg-info mb-2">
-                                {% if producto.tipo == 'alcoholic' %}
-                                    Alcohólica
-                                {% else %}
-                                    Sin Alcohol
-                                {% endif %}
-                            </span>
+                            {% if producto.stock|default:0 == 0 %}
+                                <span class="badge bg-secondary mb-2">Agotado</span>
+                            {% else %}
+                                <span class="badge bg-info mb-2">
+                                    {% if producto.tipo == 'alcoholic' %}
+                                        Alcohólica
+                                    {% else %}
+                                        Sin Alcohol
+                                    {% endif %}
+                                </span>
+                            {% endif %}
                             <p class="product-price">${{ producto.precio|floatformat:0 }}</p>
-                            <button class="btn btn-add" data-id="{{ producto.id }}" data-type="{{ producto.tipo|default_if_none:'' }}">
+                            <button class="btn btn-add" data-id="{{ producto.id }}" data-type="{{ producto.tipo|default_if_none:'' }}" data-stock="{{ producto.stock|default:0 }}" {% if producto.stock|default:0 == 0 %}disabled{% endif %}>
                                 <i class="bi bi-cart-plus"></i> Agregar al carrito
                             </button>
                         </div>

@@ -65,7 +65,8 @@ function buildProductsFromDOM() {
             }
 
             let type = '';
-            // Priorizar atributo data-type si existe (renderizado por Django)
+            let stock = 0;
+            // Priorizar atributo data-type y data-stock si existen (renderizado por Django)
             if (idBtn && idBtn.getAttribute('data-type')) {
                 type = idBtn.getAttribute('data-type').trim();
             } else if (badge) {
@@ -73,13 +74,18 @@ function buildProductsFromDOM() {
                 if (txt.includes('alcoh')) type = 'alcoholic';
                 else if (txt.includes('sin') || txt.includes('no')) type = 'non-alcoholic';
             }
+            if (idBtn && idBtn.getAttribute('data-stock')) {
+                const s = parseInt(idBtn.getAttribute('data-stock'), 10);
+                stock = Number.isNaN(s) ? 0 : s;
+            }
 
             items.push({
                 id: id || Math.floor(Math.random() * 1000000),
                 name: nameEl ? nameEl.textContent.trim() : 'Producto',
                 price: price,
                 image: imgEl ? imgEl.getAttribute('src') : '',
-                type: type
+                type: type,
+                stock: stock
             });
         } catch (e) {
             // Ignorar elementos mal formados
@@ -132,9 +138,9 @@ function renderProducts(filteredProducts = products) {
                 <img src="${product.image}" class="product-img" alt="${product.name}" loading="lazy">
                 <div class="product-body">
                     <h5 class="product-title">${product.name}</h5>
-                    <span class="badge bg-info mb-2">${product.type === 'alcoholic' ? 'Alcohólica' : 'Sin Alcohol'}</span>
+                    ${product.stock === 0 ? '<span class="badge bg-secondary mb-2">Agotado</span>' : ('<span class="badge bg-info mb-2">' + (product.type === 'alcoholic' ? 'Alcohólica' : 'Sin Alcohol') + '</span>')}
                     <p class="product-price">$${product.price.toLocaleString('es-CL')}</p>
-                    <button class="btn btn-add" data-id="${product.id}" data-type="${product.type}">
+                    <button class="btn btn-add" data-id="${product.id}" data-type="${product.type}" data-stock="${product.stock || 0}" ${product.stock === 0 ? 'disabled' : ''}>
                         <i class="bi bi-cart-plus"></i> Agregar al carrito
                     </button>
                 </div>
