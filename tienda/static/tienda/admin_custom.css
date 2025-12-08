@@ -1,0 +1,62 @@
+:root{
+    --bg: #0f0f10;
+    --card: #141414;
+    --muted: #9aa0a6;
+    --accent: #d97a1a;
+    --accent-contrast: #fff;
+}
+
+/* Body background */
+body {
+    background: var(--bg) !important;
+    color: #e6e6e6 !important;
+}
+
+/* Header / nav */
+#header, .module caption, .breadcrumbs, .nav-sidebar {
+    background: transparent !important;
+}
+
+/* Branding */
+#site-name a {
+    color: var(--accent-contrast) !important;
+    text-decoration: none;
+}
+
+/* Main boxes */
+.module, .dashboard, .app-*-module, .changeform, .inline-group, .grp-module {
+    background: var(--card) !important;
+    border: 1px solid rgba(255,255,255,0.04) !important;
+    box-shadow: none !important;
+}
+
+/* Links and buttons */
+a, a:visited { color: var(--accent) !important; }
+.btn, input[type=submit], .submit-row .button, .button {
+    background: linear-gradient(180deg, rgba(217,122,26,0.95), rgba(180,90,10,0.95));
+    border-color: rgba(0,0,0,0.2) !important;
+    color: var(--accent-contrast) !important;
+}
+
+/* Tables */
+table#result_list th, table#result_list td {
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+
+/* Form fields */
+input, textarea, select {
+    background: #0b0b0b !important;
+    color: #e6e6e6 !important;
+    border: 1px solid rgba(255,255,255,0.04) !important;
+}
+
+/* Pagination */
+.paginator, .pagination { color: var(--muted) !important; }
+
+/* Make admin images a bit rounded like site */
+.field-imagen img, .thumb { border-radius: 6px; }
+
+/* Small responsive tweak */
+@media (max-width: 768px) {
+    #content-main { padding: 0.5rem; }
+}

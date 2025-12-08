@@ -1,0 +1,47 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block content %}
+<div class="admin-dashboard container">
+    <h1>Panel de administración - Los Gatos Negros</h1>
+    <p class="lead">Accesos rápidos para administrar la tienda</p>
+
+    <div class="row mt-4">
+        <div class="col-md-4">
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Gestionar pedidos</h5>
+                    <p class="card-text">Ver, filtrar y actualizar el estado de los pedidos.</p>
+                    <a class="btn btn-primary" href="{% url 'admin:tienda_pedido_changelist' %}">Ir a Pedidos</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Gestionar catálogo</h5>
+                    <p class="card-text">Editar productos, precios e imágenes.</p>
+                    <a class="btn btn-primary" href="{% url 'admin:tienda_producto_changelist' %}">Ir a Productos</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Gestionar stock</h5>
+                    <p class="card-text">(Si agregas campo stock a Producto, podrá editarse aquí.)</p>
+                    <a class="btn btn-primary" href="{% url 'admin:tienda_producto_changelist' %}">Ir a Stock</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-12">
+            <div class="alert alert-info">Usa las acciones en la lista de Pedidos para marcar varios pedidos como "Completado" o "Cancelado".</div>
+        </div>
+    </div>
+</div>
+{% endblock %}

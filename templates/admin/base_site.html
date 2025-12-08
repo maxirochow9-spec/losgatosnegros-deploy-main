@@ -1,0 +1,13 @@
+{% extends "admin/base.html" %}
+{% load static i18n %}
+
+{% block title %}{% trans "Administración - Los Gatos Negros" %}{% endblock %}
+
+{% block extrahead %}
+    <link rel="stylesheet" href="{% static 'tienda/admin_custom.css' %}">
+    {{ block.super }}
+{% endblock %}
+
+{% block branding %}
+    <h1 id="site-name"><a href="{% url 'admin:index' %}">Los Gatos Negros</a></h1>
+{% endblock %}
