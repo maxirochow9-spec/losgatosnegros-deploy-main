@@ -466,6 +466,31 @@ html body .pagination .page-item.active .page-link {
 }
 
 /* End overrides */
+
+/* Map Bootstrap button classes to site palette for consistent pagination buttons */
+.btn-dark {
+    background: var(--dark-card) !important;
+    color: var(--text-light) !important;
+    border: 1px solid rgba(255,138,0,0.06) !important;
+    box-shadow: none !important;
+}
+.btn-dark.disabled, .btn-dark:disabled {
+    background: var(--dark-card) !important;
+    color: var(--text-muted) !important;
+    opacity: 1 !important;
+}
+.btn-outline-dark {
+    background: transparent !important;
+    color: var(--text-light) !important;
+    border: 1px solid rgba(255,255,255,0.04) !important;
+}
+.btn-warning {
+    background: linear-gradient(90deg, var(--accent), var(--accent-hover)) !important;
+    color: var(--dark-bg) !important;
+    border-color: var(--accent) !important;
+}
+
+.pagination .btn { min-width:44px; height:44px; border-radius:8px; padding:0.5rem 0.6rem; }
     background: linear-gradient(90deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
     padding: 6px 12px;
     border-radius: 999px;
