@@ -518,22 +518,36 @@ function setupEventListeners() {
     if (registerBtn) registerBtn.addEventListener('click', (e) => { e.preventDefault(); redirectToRegister(); });
     
     // Filter inputs
-    // Debounced client-side filtering for quick UX
-    if (searchInput) searchInput.addEventListener('input', debounce(filterProducts, 250));
+    // NOTE: removed client-side debounced filtering to avoid searching only within the current page.
+    // Search will be performed globally (server-side) when the user presses Enter or clicks the search icon.
+    const searchBtn = document.querySelector('.input-group .input-group-text');
+    function doServerSearch() {
+        const params = new URLSearchParams(window.location.search);
+        const q = searchInput ? searchInput.value.trim() : '';
+        if (q) params.set('q', q); else params.delete('q');
+        params.delete('page');
+        const type = typeFilter ? typeFilter.value : '';
+        if (type) params.set('type', type); else params.delete('type');
+        const qs = params.toString();
+        window.location.search = qs ? ('?' + qs) : '';
+    }
+
     // If user presses Enter in search, perform server-side search (reload with params)
     if (searchInput) searchInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
             e.preventDefault();
-            const params = new URLSearchParams(window.location.search);
-            const q = searchInput.value.trim();
-            if (q) params.set('q', q); else params.delete('q');
-            params.delete('page');
-            const type = typeFilter ? typeFilter.value : '';
-            if (type) params.set('type', type); else params.delete('type');
-            const qs = params.toString();
-            window.location.search = qs ? ('?' + qs) : '';
+            doServerSearch();
         }
     });
+
+    // Click on the search icon also triggers a server-side search
+    if (searchBtn) {
+        searchBtn.style.cursor = 'pointer';
+        searchBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            doServerSearch();
+        });
+    }
 
     // When user changes type, perform server-side filter (reload)
     if (typeFilter) typeFilter.addEventListener('change', (e) => {

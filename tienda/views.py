@@ -43,10 +43,15 @@ def catalog(request):
         if tipo:
             productos = productos.filter(tipo=tipo)
 
-        # Filtrar por búsqueda (q)
+        # Filtrar por búsqueda (q) — búsqueda global precisa: intentar exacta (iexact) primero,
+        # si no hay resultados, caer a una búsqueda parcial (icontains)
         q = request.GET.get('q') or request.GET.get('search') or request.GET.get('query')
         if q:
-            productos = productos.filter(nombre__icontains=q)
+            exact_qs = productos.filter(nombre__iexact=q)
+            if exact_qs.exists():
+                productos = exact_qs
+            else:
+                productos = productos.filter(nombre__icontains=q)
 
         # Paginación: 12 productos por página
         from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
