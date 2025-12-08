@@ -5,9 +5,28 @@
 
 {% block extrahead %}
     <link rel="stylesheet" href="{% static 'tienda/admin_custom.css' %}">
+    <!-- También incluir CSS principal del sitio para apariencia coherente -->
+    <link rel="stylesheet" href="{% static 'tienda/styles.css' %}">
     {{ block.super }}
 {% endblock %}
 
 {% block branding %}
-    <h1 id="site-name"><a href="{% url 'admin:index' %}">Los Gatos Negros</a></h1>
+    <!-- Barra superior similar a la del sitio para mantener consistencia visual -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top admin-navbar" role="navigation" aria-label="Menú admin">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'admin:index' %}">
+                <i class="bi bi-moon-stars-fill"></i> Los Gatos Negros
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNavbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="adminNavbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Ver sitio</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'admin:index' %}">Panel</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div style="height:64px"></div>
 {% endblock %}

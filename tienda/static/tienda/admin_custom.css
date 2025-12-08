@@ -1,62 +1,82 @@
-:root{
-    --bg: #0f0f10;
-    --card: #141414;
-    --muted: #9aa0a6;
-    --accent: #d97a1a;
-    --accent-contrast: #fff;
+/* Reuse site variables and typography for consistent admin look */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
+
+:root {
+    /* Map to site variables (keeps parity with tienda/styles.css) */
+    --dark-bg: #0f0f0f;
+    --dark-card: #1a1a1a;
+    --dark-card-hover: #222222;
+    --accent: #ff8a00;
+    --accent-hover: #e57200;
+    --text-light: #f4f6f8;
+    --text-muted: #9aa1a6;
 }
 
-/* Body background */
-body {
-    background: var(--bg) !important;
-    color: #e6e6e6 !important;
+/* Base */
+html, body {
+    background: var(--dark-bg) !important;
+    color: var(--text-light) !important;
+    font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif !important;
 }
 
-/* Header / nav */
+/* Make admin header transparent and align with site */
 #header, .module caption, .breadcrumbs, .nav-sidebar {
     background: transparent !important;
 }
 
 /* Branding */
 #site-name a {
-    color: var(--accent-contrast) !important;
+    color: var(--accent) !important;
     text-decoration: none;
+    font-weight: 800;
 }
 
-/* Main boxes */
-.module, .dashboard, .app-*-module, .changeform, .inline-group, .grp-module {
-    background: var(--card) !important;
+/* Card background for admin boxes */
+.module, .dashboard, .app-*-module, .changeform, .inline-group, .grp-module, .module .module-content {
+    background: var(--dark-card) !important;
     border: 1px solid rgba(255,255,255,0.04) !important;
     box-shadow: none !important;
+    border-radius: 10px;
 }
 
-/* Links and buttons */
+/* Links and accent */
 a, a:visited { color: var(--accent) !important; }
+
+/* Buttons: use site's accent button look */
 .btn, input[type=submit], .submit-row .button, .button {
-    background: linear-gradient(180deg, rgba(217,122,26,0.95), rgba(180,90,10,0.95));
-    border-color: rgba(0,0,0,0.2) !important;
-    color: var(--accent-contrast) !important;
+    background: linear-gradient(90deg, var(--accent), var(--accent-hover));
+    border: none !important;
+    color: #0b0b0b !important;
+    font-weight: 700 !important;
+    border-radius: 8px !important;
 }
 
-/* Tables */
+/* Table rows and headers */
 table#result_list th, table#result_list td {
     border-bottom: 1px solid rgba(255,255,255,0.03);
 }
 
-/* Form fields */
-input, textarea, select {
-    background: #0b0b0b !important;
-    color: #e6e6e6 !important;
-    border: 1px solid rgba(255,255,255,0.04) !important;
+/* Form fields: match site's dark form controls */
+input, textarea, select, .form-control, .vTextField, .vLargeTextField {
+    background: rgba(30,30,30,0.85) !important;
+    color: var(--text-light) !important;
+    border: 1px solid rgba(255,255,255,0.06) !important;
+    border-radius: 8px !important;
 }
 
-/* Pagination */
-.paginator, .pagination { color: var(--muted) !important; }
+/* Pagination and muted text */
+.paginator, .pagination, .help, .field-box .help { color: var(--text-muted) !important; }
 
-/* Make admin images a bit rounded like site */
-.field-imagen img, .thumb { border-radius: 6px; }
+/* Thumbnails rounded */
+.field-imagen img, .thumb { border-radius: 8px !important; }
 
-/* Small responsive tweak */
+/* Slight spacing fix to avoid navbar overlap */
+body .container { padding-top: 12px; }
+
+/* Make admin tables and list actions more visible */
+.action-checkbox, .select-across { transform: translateY(2px); }
+
+/* Responsive adjustments */
 @media (max-width: 768px) {
     #content-main { padding: 0.5rem; }
 }
