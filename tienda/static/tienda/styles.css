@@ -435,6 +435,37 @@ textarea:focus::placeholder {
     border-color: rgba(255,255,255,0.02) !important;
     transform: none !important;
 }
+
+/* ----- Forceful overrides (increase specificity to beat Bootstrap) ----- */
+html body .pagination .page-link {
+    color: var(--text-light) !important;
+    background: var(--dark-card) !important;
+    border: 1px solid rgba(255,138,0,0.06) !important;
+}
+
+html body .pagination .page-link:hover {
+    background: rgba(255,138,0,0.12) !important;
+    color: var(--dark-bg) !important;
+    border-color: rgba(255,138,0,0.28) !important;
+}
+
+html body .pagination .page-item.active .page-link {
+    background: linear-gradient(90deg, var(--accent), var(--accent-hover)) !important;
+    border-color: var(--accent) !important;
+    color: var(--dark-bg) !important;
+}
+
+/* If Bootstrap utilities are still winning, target the specific classes Bootstrap uses */
+.pagination .page-link.page-link, .page-item .page-link.page-link {
+    color: var(--text-light) !important;
+}
+
+/* Mobile: ensure buttons remain tappable and maintain colors */
+@media (max-width: 576px) {
+    html body .pagination .page-link { min-width: 36px; height: 36px; }
+}
+
+/* End overrides */
     background: linear-gradient(90deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
     padding: 6px 12px;
     border-radius: 999px;
