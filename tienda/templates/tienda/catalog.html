@@ -100,14 +100,14 @@
                         <div class="product-body">
                             <h5 class="product-title">{{ producto.nombre }}</h5>
                             <span class="badge bg-info mb-2">
-                                {% if producto.es_alcoholico %}
+                                {% if producto.tipo == 'alcoholic' %}
                                     Alcohólica
                                 {% else %}
                                     Sin Alcohol
                                 {% endif %}
                             </span>
                             <p class="product-price">${{ producto.precio|floatformat:0 }}</p>
-                            <button class="btn btn-add" data-id="{{ producto.id }}" data-type="{% if producto.es_alcoholico %}alcoholic{% else %}non-alcoholic{% endif %}">
+                            <button class="btn btn-add" data-id="{{ producto.id }}" data-type="{{ producto.tipo|default_if_none:'' }}">
                                 <i class="bi bi-cart-plus"></i> Agregar al carrito
                             </button>
                         </div>

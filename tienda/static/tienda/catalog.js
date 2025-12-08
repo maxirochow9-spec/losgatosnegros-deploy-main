@@ -65,7 +65,10 @@ function buildProductsFromDOM() {
             }
 
             let type = '';
-            if (badge) {
+            // Priorizar atributo data-type si existe (renderizado por Django)
+            if (idBtn && idBtn.getAttribute('data-type')) {
+                type = idBtn.getAttribute('data-type').trim();
+            } else if (badge) {
                 const txt = badge.textContent.toLowerCase();
                 if (txt.includes('alcoh')) type = 'alcoholic';
                 else if (txt.includes('sin') || txt.includes('no')) type = 'non-alcoholic';
@@ -129,8 +132,9 @@ function renderProducts(filteredProducts = products) {
                 <img src="${product.image}" class="product-img" alt="${product.name}" loading="lazy">
                 <div class="product-body">
                     <h5 class="product-title">${product.name}</h5>
+                    <span class="badge bg-info mb-2">${product.type === 'alcoholic' ? 'Alcohólica' : 'Sin Alcohol'}</span>
                     <p class="product-price">$${product.price.toLocaleString('es-CL')}</p>
-                    <button class="btn btn-add" data-id="${product.id}">
+                    <button class="btn btn-add" data-id="${product.id}" data-type="${product.type}">
                         <i class="bi bi-cart-plus"></i> Agregar al carrito
                     </button>
                 </div>
