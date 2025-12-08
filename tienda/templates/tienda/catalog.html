@@ -12,6 +12,28 @@
     <link rel="stylesheet" href="{% static 'tienda/styles.css' %}">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <!-- Inline override: garantizar colores de paginación por encima de Bootstrap -->
+    <style>
+        .pagination .btn.btn-dark {
+            background: var(--dark-card) !important;
+            color: var(--text-light) !important;
+            border-color: rgba(255,138,0,0.06) !important;
+        }
+        .pagination .btn.btn-dark:hover, .pagination .btn.btn-dark:focus {
+            background: rgba(255,138,0,0.12) !important;
+            color: var(--dark-bg) !important;
+        }
+        .pagination .btn.btn-warning {
+            background: linear-gradient(90deg, var(--accent), var(--accent-hover)) !important;
+            color: var(--dark-bg) !important;
+            border-color: var(--accent) !important;
+        }
+        .pagination .btn-outline-dark {
+            background: transparent !important;
+            color: var(--text-light) !important;
+            border: 1px solid rgba(255,255,255,0.04) !important;
+        }
+    </style>
 </head>
 <body>
     <a class="visually-hidden-focusable skip-link" href="#main">Saltar al contenido</a>
