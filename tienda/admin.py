@@ -26,7 +26,7 @@ class PedidoItemInline(admin.TabularInline):
 	model = PedidoItem
 	extra = 0
 	readonly_fields = ('subtotal_display',)
-	fields = ('producto', 'precio', 'cantidad', 'subtotal_display')
+	fields = ('producto', 'precio', 'cantidad', 'entregado', 'subtotal_display')
 
 	def subtotal_display(self, obj):
 		return obj.subtotal()
@@ -53,6 +53,22 @@ class ProductoAdmin(admin.ModelAdmin):
 
 @admin.register(PedidoItem)
 class PedidoItemAdmin(admin.ModelAdmin):
-	list_display = ('id', 'pedido', 'producto', 'cantidad', 'precio', 'subtotal')
+	list_display = ('id', 'pedido', 'producto', 'cantidad', 'precio', 'subtotal', 'entregado')
+	list_editable = ('cantidad', 'precio', 'entregado')
+	list_filter = ('entregado',)
+	actions = []
 	search_fields = ('producto__nombre', 'pedido__user__username')
+
+
+@admin.action(description='Marcar items seleccionados como Entregados')
+def mark_items_delivered(modeladmin, request, queryset):
+	queryset.update(entregado=True)
+
+
+@admin.action(description='Marcar items seleccionados como No entregados')
+def mark_items_not_delivered(modeladmin, request, queryset):
+	queryset.update(entregado=False)
+
+# Añadir acciones al admin de PedidoItem
+PedidoItemAdmin.actions = [mark_items_delivered, mark_items_not_delivered]
 
