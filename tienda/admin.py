@@ -35,11 +35,19 @@ class PedidoItemInline(admin.TabularInline):
 
 @admin.register(Pedido)
 class PedidoAdmin(admin.ModelAdmin):
-	list_display = ('id', 'user', 'created_at', 'status', 'total', 'telefono')
+	list_display = ('id', 'user', 'created_at', 'status', 'total', 'total_items', 'delivered_items', 'telefono')
 	list_filter = ('status', 'created_at')
 	search_fields = ('user__username', 'telefono', 'direccion')
 	inlines = (PedidoItemInline,)
 	readonly_fields = ('created_at',)
+
+	def total_items(self, obj):
+		return obj.items.count()
+	total_items.short_description = 'Items'
+
+	def delivered_items(self, obj):
+		return obj.items.filter(entregado=True).count()
+	delivered_items.short_description = 'Entreg.'
 
 
 @admin.register(Producto)
@@ -62,12 +70,31 @@ class PedidoItemAdmin(admin.ModelAdmin):
 
 @admin.action(description='Marcar items seleccionados como Entregados')
 def mark_items_delivered(modeladmin, request, queryset):
+	# Hacemos update en lote y luego actualizamos el estado de los pedidos afectados
+	affected_pedidos = set(queryset.values_list('pedido_id', flat=True))
 	queryset.update(entregado=True)
+	from .models import Pedido
+	for pid in affected_pedidos:
+		pedido = Pedido.objects.filter(id=pid).first()
+		if pedido:
+			# Si todos los items están entregados, marcar pedido como completed
+			if not pedido.items.filter(entregado=False).exists():
+				pedido.status = 'completed'
+				pedido.save()
 
 
 @admin.action(description='Marcar items seleccionados como No entregados')
 def mark_items_not_delivered(modeladmin, request, queryset):
+	affected_pedidos = set(queryset.values_list('pedido_id', flat=True))
 	queryset.update(entregado=False)
+	from .models import Pedido
+	for pid in affected_pedidos:
+		pedido = Pedido.objects.filter(id=pid).first()
+		if pedido:
+			# Si existe al menos un item no entregado, marcar pedido como pending
+			if pedido.items.filter(entregado=False).exists():
+				pedido.status = 'pending'
+				pedido.save()
 
 # Añadir acciones al admin de PedidoItem
 PedidoItemAdmin.actions = [mark_items_delivered, mark_items_not_delivered]
