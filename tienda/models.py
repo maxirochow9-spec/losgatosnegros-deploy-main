@@ -9,6 +9,7 @@ class Producto(models.Model):
     nombre = models.CharField(max_length=100)
     precio = models.DecimalField(max_digits=10, decimal_places=2)
     imagen = models.URLField()
+    descripcion = models.TextField(blank=True, default='')
     tipo = models.CharField(max_length=20, choices=TIPO_CHOICES)
     stock = models.IntegerField(default=0)
     visible = models.BooleanField(default=True)

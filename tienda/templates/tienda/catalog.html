@@ -133,9 +133,20 @@
                                 </span>
                             {% endif %}
                             <p class="product-price">${{ producto.precio|floatformat:0 }}</p>
-                            <button class="btn btn-add" data-id="{{ producto.id }}" data-type="{{ producto.tipo|default_if_none:'' }}" data-stock="{{ producto.stock|default:0 }}" {% if producto.stock|default:0 == 0 %}disabled{% endif %}>
-                                <i class="bi bi-cart-plus"></i> Agregar al carrito
-                            </button>
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-add" data-id="{{ producto.id }}" data-type="{{ producto.tipo|default_if_none:'' }}" data-stock="{{ producto.stock|default:0 }}" {% if producto.stock|default:0 == 0 %}disabled{% endif %}>
+                                    <i class="bi bi-cart-plus"></i> Agregar al carrito
+                                </button>
+                                <button class="btn btn-outline-light btn-sm" data-bs-toggle="modal" data-bs-target="#productDetailModal" 
+                                    data-id="{{ producto.id }}" 
+                                    data-name="{{ producto.nombre }}"
+                                    data-price="{{ producto.precio|floatformat:2 }}"
+                                    data-image="{{ producto.imagen }}"
+                                    data-description="{{ producto.descripcion }}"
+                                    data-type="{{ producto.tipo|default_if_none:'' }}">
+                                    <i class="bi bi-eye"></i> Ver detalles
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -238,6 +249,46 @@
 
     <!-- Modal Login/Registro eliminado: usar vistas server-side /login/ y /register/ -->
 
+    <!-- Modal Detalles del Producto -->
+    <div class="modal fade" id="productDetailModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content bg-dark text-light">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="productDetailTitle">Detalles del Producto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6 text-center mb-3">
+                            <img id="productDetailImage" src="" class="img-fluid rounded" style="max-height: 400px; object-fit: contain;">
+                        </div>
+                        <div class="col-md-6">
+                            <h4 id="productDetailName" class="mb-3"></h4>
+                            <div class="mb-3">
+                                <h5 class="text-warning">Precio</h5>
+                                <p id="productDetailPrice" class="fs-4 fw-bold"></p>
+                            </div>
+                            <div class="mb-3">
+                                <h5>Tipo</h5>
+                                <p id="productDetailType"></p>
+                            </div>
+                            <div class="mb-3">
+                                <h5>Descripción</h5>
+                                <p id="productDetailDescription"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-accent" id="addToCartFromDetail">
+                        <i class="bi bi-cart-plus"></i> Agregar al carrito
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast -->
     <div class="toast-container position-fixed bottom-0 end-0 p-3">
         <div id="customToast" class="toast" role="alert">
@@ -284,6 +335,81 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         var IS_AUTH = {% if request.user.is_authenticated %}true{% else %}false{% endif %};
+        
+        // Manejar modal de detalles del producto
+        document.addEventListener('DOMContentLoaded', function() {
+            const productDetailModal = document.getElementById('productDetailModal');
+            if (productDetailModal) {
+                productDetailModal.addEventListener('show.bs.modal', function(event) {
+                    const button = event.relatedTarget;
+                    const productId = button.getAttribute('data-id');
+                    const productName = button.getAttribute('data-name');
+                    const productPrice = button.getAttribute('data-price');
+                    const productImage = button.getAttribute('data-image');
+                    const productDescription = button.getAttribute('data-description');
+                    const productType = button.getAttribute('data-type');
+                    
+                    // Actualizar contenido del modal
+                    document.getElementById('productDetailTitle').textContent = productName;
+                    document.getElementById('productDetailName').textContent = productName;
+                    document.getElementById('productDetailPrice').textContent = `$${parseFloat(productPrice).toLocaleString('es-CL', { minimumFractionDigits: 2 })}`;
+                    document.getElementById('productDetailImage').src = productImage;
+                    document.getElementById('productDetailImage').alt = productName;
+                    document.getElementById('productDetailDescription').textContent = productDescription || 'Sin descripción disponible';
+                    
+                    // Mostrar tipo de producto
+                    const typeDisplay = productType === 'alcoholic' ? 'Alcohólica' : 'Sin Alcohol';
+                    document.getElementById('productDetailType').textContent = typeDisplay;
+                    
+                    // Guardar ID para el botón de agregar al carrito
+                    const addBtn = document.getElementById('addToCartFromDetail');
+                    addBtn.setAttribute('data-product-id', productId);
+                });
+            }
+            
+            // Manejar botón de agregar al carrito desde el modal de detalles
+            const addToCartBtn = document.getElementById('addToCartFromDetail');
+            if (addToCartBtn) {
+                addToCartBtn.addEventListener('click', function() {
+                    const productId = this.getAttribute('data-product-id');
+                    // Llamar a la función de agregar al carrito
+                    addToCartServer(productId);
+                });
+            }
+        });
+        
+        // Función para agregar al carrito (compatible con servidor)
+        function addToCartServer(productId) {
+            const cartForm = document.querySelector('form[data-add-to-cart]') || document.createElement('form');
+            if (!cartForm.dataset.addToCart) {
+                // Si no existe, crear una simple
+                fetch('/orders/create/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || ''
+                    },
+                    body: JSON.stringify({
+                        action: 'add_to_cart',
+                        product_id: productId
+                    })
+                }).then(response => response.json())
+                  .then(data => {
+                    // Mostrar toast (si existe la función)
+                    if (window.showToast) {
+                        window.showToast('Producto agregado al carrito');
+                    } else {
+                        alert('Producto agregado al carrito');
+                    }
+                    // Cerrar modal
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('productDetailModal'));
+                    if (modal) modal.hide();
+                }).catch(error => {
+                    console.error('Error:', error);
+                    alert('Error al agregar al carrito');
+                });
+            }
+        }
     </script>
     <script src="{% static 'tienda/catalog.js' %}"></script>
 </body>

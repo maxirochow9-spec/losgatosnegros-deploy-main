@@ -57,6 +57,7 @@ class ProductoAdmin(admin.ModelAdmin):
 	search_fields = ('nombre',)
 	list_editable = ('precio', 'stock', 'visible')
 	actions = (hide_products, unhide_products, mark_out_of_stock, restock_products)
+	fields = ('nombre', 'precio', 'imagen', 'descripcion', 'tipo', 'stock', 'visible')
 
 
 @admin.register(PedidoItem)

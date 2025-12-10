@@ -1190,5 +1190,65 @@ a, button, input, select, textarea {
     }
 }
 
+/* ===== Modal Detalles del Producto ===== */
+#productDetailModal .modal-content {
+    border: 1px solid rgba(255, 138, 0, 0.15);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+#productDetailModal .modal-header {
+    border-bottom: 1px solid rgba(255, 138, 0, 0.1);
+}
+
+#productDetailModal .modal-body {
+    padding: 2rem;
+}
+
+#productDetailImage {
+    border-radius: 10px;
+    border: 1px solid rgba(255, 138, 0, 0.2);
+    transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+}
+
+#productDetailImage:hover {
+    transform: scale(1.02);
+    box-shadow: 0 0 20px rgba(255, 138, 0, 0.3);
+}
+
+#productDetailModal .text-warning {
+    color: var(--accent) !important;
+    font-weight: 600;
+}
+
+#productDetailModal .modal-footer {
+    border-top: 1px solid rgba(255, 138, 0, 0.1);
+    gap: 10px;
+}
+
+#addToCartFromDetail {
+    background: linear-gradient(90deg, var(--accent), var(--accent-hover));
+    border: none;
+    font-weight: 600;
+    transition: all var(--transition-normal);
+}
+
+#addToCartFromDetail:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 138, 0, 0.3);
+}
+
+/* Botón "Ver detalles" en tarjetas de producto */
+.btn-outline-light.btn-sm {
+    border-color: rgba(255, 138, 0, 0.3);
+    color: var(--text-light);
+    transition: all var(--transition-normal);
+}
+
+.btn-outline-light.btn-sm:hover {
+    border-color: var(--accent);
+    background-color: rgba(255, 138, 0, 0.1);
+    color: var(--accent);
+}
+
 
 
