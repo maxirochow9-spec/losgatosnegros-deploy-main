@@ -338,15 +338,9 @@
 
             {% if messages %}
                 {% for message in messages %}
-                    <div class="alert alert-{{ message.tags }}" role="alert">
-                        {% if message.tags == 'danger' %}
-                            <i class="bi bi-exclamation-circle-fill"></i>
-                        {% elif message.tags == 'warning' %}
-                            <i class="bi bi-exclamation-triangle-fill"></i>
-                        {% elif message.tags == 'success' %}
-                            <i class="bi bi-check-circle-fill"></i>
-                        {% endif %}
-                        <div>{{ message }}</div>
+                    <div style="background: linear-gradient(135deg, #ff8a00, #ff6b00); color: #ffffff; padding: 1rem 1.2rem; border-radius: 10px; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem; font-weight: 700; font-size: 1rem; box-shadow: 0 4px 15px rgba(255, 138, 0, 0.4); border-left: 5px solid #ff5500;" role="alert">
+                        <i class="bi bi-exclamation-circle-fill" style="font-size: 1.5rem; color: #ffffff;"></i>
+                        <span style="color: #ffffff;">{{ message }}</span>
                     </div>
                 {% endfor %}
             {% endif %}

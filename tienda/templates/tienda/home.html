@@ -238,5 +238,60 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{% static 'tienda/home.js' %}"></script>
+    
+    {% if user.is_authenticated and not user.is_superuser %}
+    <!-- Modal de Sesión Expirada -->
+    <div id="sessionExpiredModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); z-index: 9999; align-items: center; justify-content: center;">
+        <div style="background: linear-gradient(135deg, #1a1a1a, #2a2a2a); border-radius: 15px; padding: 2.5rem; max-width: 400px; width: 90%; text-align: center; box-shadow: 0 20px 60px rgba(255, 138, 0, 0.3); border: 1px solid rgba(255, 138, 0, 0.2);">
+            <div style="font-size: 4rem; color: #ff8a00; margin-bottom: 1rem;">
+                <i class="bi bi-clock-history"></i>
+            </div>
+            <h3 style="color: #fff; font-weight: 700; margin-bottom: 0.5rem;">Sesión Expirada</h3>
+            <p style="color: #9aa1a6; margin-bottom: 1.5rem;">Tu sesión ha expirado por inactividad.</p>
+            <div style="background: rgba(255, 138, 0, 0.1); border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem;">
+                <p style="color: #ff8a00; margin: 0; font-size: 0.9rem;">
+                    <i class="bi bi-info-circle"></i> Serás redirigido al inicio de sesión
+                </p>
+            </div>
+            <button id="sessionExpiredBtn" style="background: linear-gradient(90deg, #ff8a00, #e57200); border: none; color: #0f0f0f; font-weight: 700; padding: 0.85rem 2rem; border-radius: 8px; font-size: 1rem; cursor: pointer; width: 100%; transition: all 0.3s ease;">
+                <i class="bi bi-box-arrow-right"></i> Entendido
+            </button>
+        </div>
+    </div>
+    
+    <!-- Logout automático por inactividad (5 minutos) - Solo usuarios normales -->
+    <script>
+        (function() {
+            const INACTIVITY_TIMEOUT = 20 * 60 * 1000; // 20 minutos en milisegundos
+            let inactivityTimer;
+            
+            function resetTimer() {
+                clearTimeout(inactivityTimer);
+                inactivityTimer = setTimeout(showSessionExpiredModal, INACTIVITY_TIMEOUT);
+            }
+            
+            function showSessionExpiredModal() {
+                const modal = document.getElementById('sessionExpiredModal');
+                modal.style.display = 'flex';
+                
+                document.getElementById('sessionExpiredBtn').addEventListener('click', function() {
+                    window.location.href = '{% url "logout" %}';
+                });
+                
+                // Auto-redirect después de 5 segundos
+                setTimeout(function() {
+                    window.location.href = '{% url "logout" %}';
+                }, 5000);
+            }
+            
+            const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
+            events.forEach(function(event) {
+                document.addEventListener(event, resetTimer, true);
+            });
+            
+            resetTimer();
+        })();
+    </script>
+    {% endif %}
 </body>
 </html>

@@ -94,12 +94,22 @@ def login_view(request):
         password = request.POST.get('password')
         next_url = request.POST.get('next') or request.GET.get('next') or '/catalogo/'
 
+        # Verificar campos vacíos
+        if not username or not password:
+            messages.error(request, 'Campos vacíos')
+            return render(request, 'tienda/login.html', {'next': next_url})
+
+        # Verificar si el usuario existe
+        if not User.objects.filter(username=username).exists():
+            messages.error(request, 'Usuario inexistente')
+            return render(request, 'tienda/login.html', {'next': next_url})
+
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
             return redirect(next_url)
         else:
-            messages.error(request, 'Credenciales inválidas')
+            messages.error(request, 'Contraseña incorrecta')
             return render(request, 'tienda/login.html', {'next': next_url})
 
     # GET
@@ -169,7 +179,8 @@ def register_view(request):
 
 def logout_view(request):
     logout(request)
-    return redirect('catalog')
+    messages.success(request, 'Se ha cerrado la sesión correctamente')
+    return redirect('login')
 
 
 @login_required
