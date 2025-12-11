@@ -300,6 +300,60 @@
         </div>
     </div>
 
+    <!-- Modal Producto Eliminado -->
+    <div id="productRemovedModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); z-index: 9999; align-items: center; justify-content: center;">
+        <div style="background: linear-gradient(135deg, #1a1a1a, #2a2a2a); border-radius: 15px; padding: 2.5rem; max-width: 400px; width: 90%; text-align: center; box-shadow: 0 20px 60px rgba(255, 138, 0, 0.3); border: 1px solid rgba(255, 138, 0, 0.2); animation: modalFadeIn 0.3s ease-out;">
+            <div style="font-size: 4rem; color: #28a745; margin-bottom: 1rem;">
+                <i class="bi bi-check-circle-fill"></i>
+            </div>
+            <h3 style="color: #fff; font-weight: 700; margin-bottom: 0.5rem;">Producto Eliminado</h3>
+            <p style="color: #9aa1a6; margin-bottom: 1.5rem;">El producto se ha eliminado correctamente del carrito.</p>
+            <button id="productRemovedBtn" style="background: linear-gradient(90deg, #ff8a00, #e57200); border: none; color: #0f0f0f; font-weight: 700; padding: 0.85rem 2rem; border-radius: 8px; font-size: 1rem; cursor: pointer; width: 100%; transition: all 0.3s ease;">
+                <i class="bi bi-cart"></i> Continuar comprando
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal Confirmar Vaciar Carrito -->
+    <div id="clearCartConfirmModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); z-index: 9999; align-items: center; justify-content: center;">
+        <div style="background: linear-gradient(135deg, #1a1a1a, #2a2a2a); border-radius: 15px; padding: 2.5rem; max-width: 400px; width: 90%; text-align: center; box-shadow: 0 20px 60px rgba(255, 138, 0, 0.3); border: 1px solid rgba(255, 138, 0, 0.2); animation: modalFadeIn 0.3s ease-out;">
+            <div style="font-size: 4rem; color: #ff8a00; margin-bottom: 1rem;">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+            </div>
+            <h3 style="color: #fff; font-weight: 700; margin-bottom: 0.5rem;">¿Vaciar Carrito?</h3>
+            <p style="color: #9aa1a6; margin-bottom: 1.5rem;">¿Estás seguro de que deseas eliminar todos los productos del carrito?</p>
+            <div style="display: flex; gap: 1rem;">
+                <button id="clearCartCancelBtn" style="flex: 1; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); color: #fff; font-weight: 600; padding: 0.85rem 1rem; border-radius: 8px; font-size: 1rem; cursor: pointer; transition: all 0.3s ease;">
+                    <i class="bi bi-x-lg"></i> Cancelar
+                </button>
+                <button id="clearCartConfirmBtn" style="flex: 1; background: linear-gradient(90deg, #dc3545, #c82333); border: none; color: #fff; font-weight: 700; padding: 0.85rem 1rem; border-radius: 8px; font-size: 1rem; cursor: pointer; transition: all 0.3s ease;">
+                    <i class="bi bi-trash"></i> Vaciar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Carrito Vaciado -->
+    <div id="cartClearedModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); z-index: 9999; align-items: center; justify-content: center;">
+        <div style="background: linear-gradient(135deg, #1a1a1a, #2a2a2a); border-radius: 15px; padding: 2.5rem; max-width: 400px; width: 90%; text-align: center; box-shadow: 0 20px 60px rgba(255, 138, 0, 0.3); border: 1px solid rgba(255, 138, 0, 0.2); animation: modalFadeIn 0.3s ease-out;">
+            <div style="font-size: 4rem; color: #28a745; margin-bottom: 1rem;">
+                <i class="bi bi-cart-x-fill"></i>
+            </div>
+            <h3 style="color: #fff; font-weight: 700; margin-bottom: 0.5rem;">Carrito Vaciado</h3>
+            <p style="color: #9aa1a6; margin-bottom: 1.5rem;">Se han eliminado todos los productos del carrito.</p>
+            <button id="cartClearedBtn" style="background: linear-gradient(90deg, #ff8a00, #e57200); border: none; color: #0f0f0f; font-weight: 700; padding: 0.85rem 2rem; border-radius: 8px; font-size: 1rem; cursor: pointer; width: 100%; transition: all 0.3s ease;">
+                <i class="bi bi-bag"></i> Seguir comprando
+            </button>
+        </div>
+    </div>
+
+    <style>
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+    </style>
+
     <!-- Footer -->
     <footer class="footer">
         <div class="container">

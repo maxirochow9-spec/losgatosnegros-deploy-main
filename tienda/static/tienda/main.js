@@ -258,6 +258,29 @@ function removeFromCart(id) {
     localStorage.setItem('cart', JSON.stringify(cart));
     renderCart();
     updateCartCount();
+    
+    // Mostrar modal de producto eliminado
+    showProductRemovedModal();
+}
+
+// Mostrar modal de producto eliminado
+function showProductRemovedModal() {
+    const modal = document.getElementById('productRemovedModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        
+        const closeBtn = document.getElementById('productRemovedBtn');
+        if (closeBtn) {
+            closeBtn.onclick = function() {
+                modal.style.display = 'none';
+            };
+        }
+        
+        // Cerrar automáticamente después de 3 segundos
+        setTimeout(function() {
+            modal.style.display = 'none';
+        }, 3000);
+    }
 }
 
 // Clear cart
@@ -266,6 +289,51 @@ function clearCart() {
     localStorage.setItem('cart', JSON.stringify(cart));
     renderCart();
     updateCartCount();
+    showCartClearedModal();
+}
+
+// Mostrar modal de carrito vaciado
+function showCartClearedModal() {
+    const modal = document.getElementById('cartClearedModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        
+        const closeBtn = document.getElementById('cartClearedBtn');
+        if (closeBtn) {
+            closeBtn.onclick = function() {
+                modal.style.display = 'none';
+            };
+        }
+        
+        setTimeout(function() {
+            modal.style.display = 'none';
+        }, 3000);
+    }
+}
+
+// Mostrar modal de confirmar vaciar carrito
+function showClearCartConfirmModal() {
+    return new Promise((resolve) => {
+        const modal = document.getElementById('clearCartConfirmModal');
+        if (modal) {
+            modal.style.display = 'flex';
+            
+            const confirmBtn = document.getElementById('clearCartConfirmBtn');
+            const cancelBtn = document.getElementById('clearCartCancelBtn');
+            
+            confirmBtn.onclick = function() {
+                modal.style.display = 'none';
+                resolve(true);
+            };
+            
+            cancelBtn.onclick = function() {
+                modal.style.display = 'none';
+                resolve(false);
+            };
+        } else {
+            resolve(confirm('¿Estás seguro de que deseas vaciar el carrito?'));
+        }
+    });
 }
 
 // Filter products
@@ -309,9 +377,10 @@ function setupEventListeners() {
     });
     
     // Clear cart button
-    clearCartBtn.addEventListener('click', () => {
+    clearCartBtn.addEventListener('click', async () => {
         if (cart.length === 0) return;
-        if (confirm('¿Estás seguro de que deseas vaciar el carrito?')) {
+        const confirmed = await showClearCartConfirmModal();
+        if (confirmed) {
             clearCart();
         }
     });
